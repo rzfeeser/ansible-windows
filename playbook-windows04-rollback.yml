@@ -1,0 +1,30 @@
+---
+- name: Learning to target windows machines
+  hosts: winbox
+  gather_facts: no # does this work on windows?
+
+  vars_prompt:
+          - name: ansible_ssh_pass
+            prompt: What is the password to log into this windows machine?
+            private: yes
+
+  vars:
+          nasa_apod: https://www.nasa.gov/sites/default/files/thumbnails/image/apod.jpg
+
+  tasks:
+          - name: Blocking our Windows work
+            block:
+                  - name: Get some cool background graphics
+                    win_get_url:
+                            url: "{{ nasa_apod }}"
+                            dest: "C:\\Users\\{{ ansible_user }}\\Downloads\\nasa_apod.jpg"        # update destination (user)
+
+                  - name: Trigger a FAIL with /usr/bin/false
+                    shell: /usr/bin/false
+                    delegate_to: localhost
+
+            rescue:
+                  - name: Undo the get url
+                    ansible.windows.win_file:
+                      path: "C:\\Users\\{{ ansible_user }}\\Downloads\\nasa_apod.jpg"
+                      state: absent
