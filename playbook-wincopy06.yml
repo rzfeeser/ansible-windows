@@ -1,0 +1,11 @@
+---
+- name: Learning to run playbooks against windows
+  hosts: winbox
+  gather_facts: yes
+  connection: winrm
+  
+  tasks:
+  - name: Create a file on the windows target
+    ansible.windows.win_copy:
+      content: Alta3 Research
+      dest: "C:\\Alta3.txt" 
