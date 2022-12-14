@@ -1,0 +1,25 @@
+---
+- name: Learning to Use Ansible for Windows automation
+  hosts: win_servers
+  #connection: winrm   # we already mapped this in our inventory
+  gather_facts: yes
+
+  tasks:
+          - name: gather_facts does indeed work on windows
+            debug:
+                    var: ansible_facts   # display the facts we got back
+                    verbosity: 1    # now this only runs if i include -v
+
+          - name: Try to get avail win updates
+            ansible.windows.win_updates:
+                    category_names: "*"
+                    state: searched
+            register: results
+
+          - debug:
+                  var: results
+
+          - name: Show just the windows updates
+            debug:
+                    msg: "{{ item.id }} is the UUID for the update {{ item.title }}"
+            loop: "{{ results.updates }}"
